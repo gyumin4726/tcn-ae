@@ -1,7 +1,10 @@
 import os
 import numpy
 import tensorflow
+import matplotlib
+matplotlib.use('Agg')  # GUI 없는 환경에서 사용하는 backend
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 def select_gpus(gpu_list):
     if type(gpu_list) != list:
@@ -60,7 +63,7 @@ def get_anomaly_windows(is_anomaly):
     return edges.reshape((-1,2)) + numpy.array([0,-1])
 
 
-def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot_anomaly_score = True):
+def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot_anomaly_score = True, filename = None):
     #anomaly_score = results["anomaly_score"]
     series = data["series"] 
     extend_window = 0
@@ -70,12 +73,16 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
         pl_range = (0,series.shape[0])
         extend_window = 10 # extend anomaly window, just to see something in the plot
         my_alpha = 0.4
-    plt.figure(figsize=(25,8))
+    plt.figure(figsize=(10,5))
     if plot_signal:
         plt.plot(series[cols].values, zorder=1)
         plt.ylim((series[cols].values.min(),series[cols].values.max()));
+        plt.ylabel('Signal Value')
+        plt.title('Mackey-Glass Time Series with Anomalies')
     if plot_anomaly_score:
         plt.plot(anomaly_score, 'b-', zorder=2)
+        plt.ylabel('Anomaly Score')
+        plt.title('TCN-AE Anomaly Detection Results')
 
     real_anoms = get_anomaly_windows(data['is_anomaly'])
     
@@ -98,4 +105,29 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
         plt.axhline(y=artifical_threshold, xmin=0.0, xmax=650000, color='r')
 
     plt.xlim(pl_range);
-    plt.draw()
+    plt.xlabel('Time')
+    plt.grid(True, alpha=0.3)
+    
+    # 이미지 파일로 저장
+    if filename:
+        # 타임스탬프를 추가한 파일명 생성
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name_part, ext = os.path.splitext(filename)
+        timestamped_filename = f"{name_part}_{timestamp}{ext}"
+        
+        # 폴더가 존재하지 않으면 생성
+        folder_path = os.path.dirname(timestamped_filename)
+        if folder_path and not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        plt.savefig(timestamped_filename, dpi=150, bbox_inches='tight')
+        print(f"✅ 그래프가 {timestamped_filename}에 저장되었습니다.")
+    else:
+        # 기본 폴더 생성
+        if not os.path.exists('RESULT'):
+            os.makedirs('RESULT')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        default_filename = f'RESULT/anomaly_detection_result_{timestamp}.png'
+        plt.savefig(default_filename, dpi=150, bbox_inches='tight')
+        print(f"✅ 그래프가 {default_filename}에 저장되었습니다.")
+    
+    plt.close()  # 메모리 해제

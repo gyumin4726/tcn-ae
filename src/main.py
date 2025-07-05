@@ -80,11 +80,11 @@ def main():
     # The blue curve is the anomaly score.
     # The red horizontal line indicates a simple threshold, which is the smallest possible value that would not produce a false positive
     print("Plotting anomaly score...")
-    plot_results(test_data, anomaly_score, pl_range=None, plot_signal=False, plot_anomaly_score=True)
+    plot_results(test_data, anomaly_score, pl_range=None, plot_signal=False, plot_anomaly_score=True, filename='RESULT/anomaly_score_full.png')
     
     # Take a look at the MG time series: zoom into the first anomaly
     print("Plotting zoomed view of first anomaly...")
-    plot_results(test_data, anomaly_score, pl_range=(40000, 42000), plot_signal=True, plot_anomaly_score=False)
+    plot_results(test_data, anomaly_score, pl_range=(40000, 42000), plot_signal=True, plot_anomaly_score=False, filename='RESULT/anomaly_zoom_40000_42000.png')
     
     print("\n" + "=" * 50)
     print("TCN-AE Anomaly Detection completed successfully!")
