@@ -124,7 +124,7 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
         if folder_path and not os.path.exists(folder_path):
             os.makedirs(folder_path)
         plt.savefig(timestamped_filename, dpi=150, bbox_inches='tight')
-        print(f"✅ 그래프가 {timestamped_filename}에 저장되었습니다.")
+        print(f"그래프가 {timestamped_filename}에 저장되었습니다.")
     else:
         # 기본 폴더 생성
         if not os.path.exists('RESULT'):
@@ -132,6 +132,6 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         default_filename = f'RESULT/anomaly_detection_result_{timestamp}.png'
         plt.savefig(default_filename, dpi=150, bbox_inches='tight')
-        print(f"✅ 그래프가 {default_filename}에 저장되었습니다.")
+        print(f"그래프가 {default_filename}에 저장되었습니다.")
     
     plt.close()  # 메모리 해제

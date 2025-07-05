@@ -1,16 +1,16 @@
 # TCN-AE 시계열 이상 탐지 프로젝트
 
-## 📖 프로젝트 소개
+## 프로젝트 소개
 
 이 프로젝트는 **TCN-AE (Temporal Convolutional Network Autoencoder)**를 사용하여 Mackey-Glass 시계열 데이터에서 이상을 탐지하는 딥러닝 프로젝트입니다.
 
-### 🎯 주요 특징
+### 주요 특징
 - **최신 TensorFlow 2.15.0** 환경에서 GPU 가속 지원
 - **GUI 없는 환경**에서 자동 이미지 저장 기능
 - **타임스탬프 기반** 결과 파일 관리
 - **높은 정확도**의 이상 탐지 성능
 
-## 🧠 TCN-AE 모델이란?
+## TCN-AE 모델이란?
 
 **TCN-AE = Temporal Convolutional Network Autoencoder**
 
@@ -18,19 +18,19 @@
 ```
 입력 (1050 길이) 
     ↓
-🔽 인코더 (Encoder)
+인코더 (Encoder)
 ├── TCN (dilations: 1,2,4,8,16)
 ├── Conv1D (8 filters)
 ├── AveragePooling1D (1/42 압축)
 └── 압축된 표현 (25 길이)
     ↓
-🔼 디코더 (Decoder)
+디코더 (Decoder)
 ├── UpSampling1D (42배 확대)
 ├── TCN (dilations: 1,2,4,8,16)
 ├── Dense Layer
 └── 복원된 데이터 (1050 길이)
     ↓
-📊 이상 탐지
+이상 탐지
 ├── 복원 오차 계산
 ├── 슬라이딩 윈도우 (128 길이)
 ├── 마할라노비스 거리 계산
@@ -43,7 +43,7 @@
 - **안정적 학습**: 기울기 소실 문제 없음
 - **메모리 효율**: 낮은 메모리 사용량
 
-## 🛠️ 환경 설정 및 설치
+## 환경 설정 및 설치
 
 ### 1. Conda 가상환경 생성
 
@@ -69,7 +69,7 @@ nvidia-smi
 python -c "import tensorflow as tf; print('GPU 사용 가능:', tf.config.list_physical_devices('GPU'))"
 ```
 
-## 🚀 실행 방법
+## 실행 방법
 
 ### 기본 실행
 
@@ -88,7 +88,7 @@ python main.py
 4. **이상 탐지**: 전체 시계열에서 이상 점수 계산
 5. **결과 저장**: RESULT 폴더에 이미지 자동 저장
 
-## 📊 데이터 Shape 이해하기
+## 데이터 Shape 이해하기
 
 ### Train vs Test 데이터 Shape 차이
 
@@ -97,7 +97,7 @@ train_X.shape: (19791, 1050, 1)  # 훈련 데이터
 test_X.shape: (1, 100000, 1)     # 테스트 데이터
 ```
 
-#### 🔽 훈련 데이터 (19791, 1050, 1)
+#### 훈련 데이터 (19791, 1050, 1)
 - **19,791개 윈도우**: 원본 시계열(100,000 포인트)을 1,050 길이로 슬라이딩 윈도우 분할
 - **윈도우 길이 1,050**: 각 훈련 샘플의 시계열 길이
 - **스트라이드 5**: 5간격으로 샘플링하여 훈련 효율성 향상
@@ -113,12 +113,12 @@ test_X.shape: (1, 100000, 1)     # 테스트 데이터
 윈도우 19791: [..., 99999]
 ```
 
-#### 🔼 테스트 데이터 (1, 100000, 1)
+#### 테스트 데이터 (1, 100000, 1)
 - **1개 배치**: 전체 시계열을 하나의 배치로 처리
 - **길이 100,000**: 전체 시계열 길이 (연속적인 이상 탐지)
 - **차원 1**: 단변량 시계열
 
-### 왜 이렇게 다른가? 🤔
+### 왜 이렇게 다른가?
 
 #### 1. **훈련 전략: 패턴 학습**
 ```python
@@ -151,7 +151,7 @@ test_X.shape: (1, 100000, 1)     # 테스트 데이터
 - 이상점수: 각 시점별 복원 오차 → 마할라노비스 거리
 ```
 
-### 이 방식이 올바른 이유 ✅
+### 이 방식이 올바른 이유
 
 #### **메모리 효율성**
 ```python
@@ -177,7 +177,7 @@ test_X.shape: (1, 100000, 1)     # 테스트 데이터
 - 지연시간: 1,050 포인트마다 이상 점수 계산 가능
 ```
 
-### 데이터 처리 파이프라인 🔄
+### 데이터 처리 파이프라인
 
 ```python
 # data.py에서의 실제 처리 (라인 180-190)
@@ -192,14 +192,14 @@ test_X.shape: (1, 100000, 1)     # 테스트 데이터
 3. 최종 형태: (1, 100000, 1)
 ```
 
-## 📊 실행 결과
+## 실행 결과
 
 ### 예상 출력
 ```
 Starting Time Series Anomaly Detection with TCN-AE
 ==================================================
 
-🔧 GPU 설정...
+GPU 설정...
 selected GPUs: 0
 
 1. Loading and preparing training data...
@@ -219,8 +219,8 @@ test_X.shape: (1, 100000, 1)
 > Prediction time: 32 seconds.
 
 4. Visualizing results...
-✅ 그래프가 RESULT/anomaly_score_full_20250705_143022.png에 저장되었습니다.
-✅ 그래프가 RESULT/anomaly_zoom_40000_42000_20250705_143022.png에 저장되었습니다.
+그래프가 RESULT/anomaly_score_full_20250705_143022.png에 저장되었습니다.
+그래프가 RESULT/anomaly_zoom_40000_42000_20250705_143022.png에 저장되었습니다.
 
 ==================================================
 TCN-AE Anomaly Detection completed successfully!
@@ -239,7 +239,7 @@ RESULT/
 - **정확도**: 모든 실제 이상을 성공적으로 탐지
 - **오탐률**: 매우 낮음 (정상 구간에서 안정적)
 
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 bioma-tcn-ae/
@@ -275,7 +275,7 @@ bioma-tcn-ae/
 - 비GUI 환경 matplotlib 설정
 - 타임스탬프 기반 이미지 저장
 
-## 🔧 문제 해결 (Troubleshooting)
+## 문제 해결 (Troubleshooting)
 
 ### 1. TensorFlow GPU 인식 문제
 ```bash
@@ -307,7 +307,7 @@ import matplotlib
 matplotlib.use('Agg')  # 비GUI 백엔드 사용
 ```
 
-## 📈 성능 개선 사항
+## 성능 개선 사항
 
 ### 환경 최적화
 - **TensorFlow 2.3.0 → 2.15.0**: GPU 호환성 대폭 개선
@@ -323,17 +323,6 @@ matplotlib.use('Agg')  # 비GUI 백엔드 사용
 - **이미지 크기**: 25x8 → 15x6 inch (파일 크기 80% 감소)
 - **해상도**: 300 DPI → 150 DPI (화면 보기 최적화)
 - **파일명**: 타임스탬프 자동 추가로 중복 방지
-
-## 📚 참고 자료
-
-- **TCN 논문**: "An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling"
-- **Autoencoder**: 비지도 학습 기반 이상 탐지
-- **Mackey-Glass 방정식**: 혼돈 시계열 데이터 생성
-
-## 🤝 기여
-
-이 프로젝트는 시계열 이상 탐지 연구 및 실무에 활용할 수 있습니다. 
-최신 딥러닝 기술과 엔지니어링 모범 사례가 적용되어 있습니다.
 
 ---
 

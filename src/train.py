@@ -16,11 +16,11 @@ import data  # data.py: Allows to generate anomalous Mackey-Glass (MG) time seri
 def main():
     """Main function to train the TCN-AE model."""
     
-    print("🚀 TCN-AE 모델 훈련 시작")
+    print("TCN-AE 모델 훈련 시작")
     print("=" * 50)
     
     # GPU 설정: 0번 GPU 사용 (여러 GPU가 있는 경우 리스트로 지정 가능)
-    print("\n🔧 GPU 설정...")
+    print("\nGPU 설정...")
     select_gpus(0)  # 0번 GPU 사용
     
     # ==========================================
@@ -43,8 +43,8 @@ def main():
     tcn_ae = TCNAE()  # Use the parameters specified in the paper
     
     # 모델 파라미터 수 출력
-    print(f"\n📊 모델 파라미터 수: {tcn_ae.model.count_params():,}")
-    print("🏗️ 모델 구조:")
+    print(f"\n모델 파라미터 수: {tcn_ae.model.count_params():,}")
+    print("모델 구조:")
     tcn_ae.model.summary()
     
     # Train TCN-AE for 10 epochs. For a better accuracy 
@@ -52,7 +52,7 @@ def main():
     # The training takes about 3-4 minutes for 10 epochs, 
     # and 15 minutes for 40 epochs (on Google CoLab, with GPU enabled)
     epochs = 10  # You can change this to 40 for better accuracy
-    print(f"\n⏱️ Training for {epochs} epochs...")
+    print(f"\nTraining for {epochs} epochs...")
     
     training_start_time = time.time()
     tcn_ae.fit(train_X, train_X, batch_size=32, epochs=epochs, verbose=1)
@@ -74,12 +74,9 @@ def main():
     tcn_ae.model.save(model_filename)
     
     print("\n" + "=" * 50)
-    print("🎉 TCN-AE 모델 훈련 완료!")
-    print(f"📊 훈련 시간: {training_time:.2f}초")
-    print(f"📁 모델 저장 위치: {model_filename}")
-    print("   (모델 구조 + 가중치 + 컴파일 정보 모두 포함)")
-    print(f"\n🧪 모델 테스트를 원하시면 다음 명령을 실행하세요:")
-    print(f"   python test_model.py")
+    print("TCN-AE 모델 훈련 완료!")
+    print(f"훈련 시간: {training_time:.2f}초")
+    print(f"모델 저장 위치: {model_filename}")
 
 
 if __name__ == "__main__":

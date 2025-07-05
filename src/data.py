@@ -43,7 +43,7 @@ class Data:
 
         numpy.random.seed(seed)
         # 실제 이상치 개수 출력 (사용자가 확인할 수 있도록)
-        print(f"🎯 실제 삽입된 이상치 개수: {self.num_anomalies}개")
+        print(f"실제 삽입된 이상치 개수: {self.num_anomalies}개")
         
         anomaly_positions = numpy.random.randint((self.series_length-self.min_anomaly_distance*self.num_anomalies)/self.num_anomalies, size = self.num_anomalies)+self.min_anomaly_distance
         anomaly_positions = int(0.95*self.series_length) - numpy.cumsum(anomaly_positions)
