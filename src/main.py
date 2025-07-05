@@ -7,6 +7,7 @@ Time Series Anomaly Detection in Mackey-Glass Time Series with TCN-AE
 import numpy
 import time
 import os
+from datetime import datetime
 from utilities import select_gpus, plot_results  # utilities.py: Contains a few miscellaneous functions 
 from tcnae import TCNAE  # tcnae.py: Specification of the TCN-AE model
 import data  # data.py: Allows to generate anomalous Mackey-Glass (MG) time series 
@@ -41,14 +42,35 @@ def main():
     # Build and compile the model
     tcn_ae = TCNAE()  # Use the parameters specified in the paper
     
+    # 모델 파라미터 수 출력
+    print(f"\n📊 모델 파라미터 수: {tcn_ae.model.count_params():,}")
+    print("🏗️ 모델 구조:")
+    tcn_ae.model.summary()
+    
     # Train TCN-AE for 10 epochs. For a better accuracy 
     # on the test case, increase the epochs to epochs=40 
     # The training takes about 3-4 minutes for 10 epochs, 
     # and 15 minutes for 40 epochs (on Google CoLab, with GPU enabled)
     epochs = 10  # You can change this to 40 for better accuracy
-    print(f"Training for {epochs} epochs...")
+    print(f"\n⏱️ Training for {epochs} epochs...")
     
     tcn_ae.fit(train_X, train_X, batch_size=32, epochs=epochs, verbose=1)
+    
+    # 모델 저장 (현재 날짜와 시간 포함)
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_filename = f"RESULT/tcn_ae_model_{current_time}.h5"
+    weights_filename = f"RESULT/tcn_ae_weights_{current_time}.h5"
+    
+    # RESULT 디렉토리 생성 (없는 경우)
+    os.makedirs("RESULT", exist_ok=True)
+    
+    # 모델 전체 저장
+    tcn_ae.model.save(model_filename)
+    print(f"💾 모델이 저장되었습니다: {model_filename}")
+    
+    # 가중치만 저장 (더 가벼운 파일)
+    tcn_ae.model.save_weights(weights_filename)
+    print(f"💾 가중치가 저장되었습니다: {weights_filename}")
     
     # ==========================================
     # 3. Model Testing and Evaluation
@@ -80,14 +102,19 @@ def main():
     # The blue curve is the anomaly score.
     # The red horizontal line indicates a simple threshold, which is the smallest possible value that would not produce a false positive
     print("Plotting anomaly score...")
-    plot_results(test_data, anomaly_score, pl_range=None, plot_signal=False, plot_anomaly_score=True, filename='RESULT/anomaly_score_full.png')
+    plot_results(test_data, anomaly_score, pl_range=None, plot_signal=False, plot_anomaly_score=True, filename=f'RESULT/anomaly_score_{current_time}.png')
     
     # Take a look at the MG time series: zoom into the first anomaly
     print("Plotting zoomed view of first anomaly...")
-    plot_results(test_data, anomaly_score, pl_range=(40000, 42000), plot_signal=True, plot_anomaly_score=False, filename='RESULT/anomaly_zoom_40000_42000.png')
+    plot_results(test_data, anomaly_score, pl_range=(40000, 42000), plot_signal=True, plot_anomaly_score=False, filename=f'RESULT/anomaly_zoom_{current_time}.png')
     
     print("\n" + "=" * 50)
     print("TCN-AE Anomaly Detection completed successfully!")
+    print(f"📁 결과 파일들은 RESULT/ 디렉토리에 저장되었습니다.")
+    print(f"   - 모델: {model_filename}")
+    print(f"   - 가중치: {weights_filename}")
+    print(f"   - 그래프: RESULT/anomaly_score_{current_time}.png")
+    print(f"   - 그래프: RESULT/anomaly_zoom_{current_time}.png")
 
 
 if __name__ == "__main__":
