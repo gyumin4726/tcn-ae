@@ -80,7 +80,10 @@ def test_on_different_series(model, test_series_ids=[3], verbose=True):
             test_data = data_gen.build_data(ts_id, verbose=0)
             test_X = test_data["scaled_series"].values[np.newaxis, :, :]
             
-            print(f"   데이터 shape: {test_X.shape}")
+            # 실제 이상치 개수 정보 로깅
+            num_anomalies = test_data.get("num_anomalies", "Unknown")
+            print(f"   🎯 실제 이상치 개수: {num_anomalies}개")
+            print(f"   📊 데이터 shape: {test_X.shape}")
             
             # 예측 수행
             start_time = time.time()
@@ -93,7 +96,7 @@ def test_on_different_series(model, test_series_ids=[3], verbose=True):
                 # 끝에 padding 추가
                 pad_width = ((0, 0), (0, test_X.shape[1] - reconstructed.shape[1]), (0, 0))
                 reconstructed = np.pad(reconstructed, pad_width, 'constant')
-                print(f"   Shape 조정: {reconstructed.shape}")
+                print(f"   🔧 Shape 조정: {reconstructed.shape}")
             
             # 복원 오차 계산 (MSE)
             reconstruction_error = np.mean((test_X - reconstructed) ** 2, axis=2).flatten()
@@ -119,15 +122,16 @@ def test_on_different_series(model, test_series_ids=[3], verbose=True):
             
             prediction_time = time.time() - start_time
             
-            print(f"   예측 시간: {prediction_time:.2f}초")
-            print(f"   이상 점수 범위: {np.min(anomaly_score):.4f} ~ {np.max(anomaly_score):.4f}")
+            print(f"   ⏱️ 예측 시간: {prediction_time:.2f}초")
+            print(f"   📈 이상 점수 범위: {np.min(anomaly_score):.4f} ~ {np.max(anomaly_score):.4f}")
             
             # 결과 저장
             results[ts_id] = {
                 'anomaly_score': anomaly_score,
                 'test_data': test_data,
                 'prediction_time': prediction_time,
-                'data_shape': test_X.shape
+                'data_shape': test_X.shape,
+                'num_anomalies': num_anomalies
             }
             
             if verbose:
@@ -196,10 +200,11 @@ def interactive_test():
     
     # 결과 요약
     print("\n📊 테스트 결과 요약:")
-    print("-" * 30)
+    print("-" * 50)
     for ts_id, result in results.items():
         if result is not None:
-            print(f"시계열 {ts_id}: 예측 시간 {result['prediction_time']:.2f}초, "
+            num_anomalies = result.get('num_anomalies', 'Unknown')
+            print(f"시계열 {ts_id}: 실제 이상치 {num_anomalies}개, 예측 시간 {result['prediction_time']:.2f}초, "
                   f"이상 점수 범위 {np.min(result['anomaly_score']):.4f}~{np.max(result['anomaly_score']):.4f}")
         else:
             print(f"시계열 {ts_id}: 테스트 실패")

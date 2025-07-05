@@ -69,6 +69,10 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
     extend_window = 0
     my_alpha = 0.15
     cols = ["value"]
+    
+    # 이상치 개수 정보 추출
+    num_anomalies = data.get("num_anomalies", "Unknown")
+    
     if pl_range is None:
         pl_range = (0,series.shape[0])
         extend_window = 10 # extend anomaly window, just to see something in the plot
@@ -78,11 +82,11 @@ def plot_results(data, anomaly_score, pl_range = None, plot_signal = False, plot
         plt.plot(series[cols].values, zorder=1)
         plt.ylim((series[cols].values.min(),series[cols].values.max()));
         plt.ylabel('Signal Value')
-        plt.title('Mackey-Glass Time Series with Anomalies')
+        plt.title(f'Mackey-Glass Time Series with Anomalies (실제 이상치: {num_anomalies}개)')
     if plot_anomaly_score:
         plt.plot(anomaly_score, 'b-', zorder=2)
         plt.ylabel('Anomaly Score')
-        plt.title('TCN-AE Anomaly Detection Results')
+        plt.title(f'TCN-AE Anomaly Detection Results (실제 이상치: {num_anomalies}개)')
 
     real_anoms = get_anomaly_windows(data['is_anomaly'])
     

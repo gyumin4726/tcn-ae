@@ -8,7 +8,7 @@ class Data:
     def __init__(self,
                  data_folder = "../data/MGAB/",
                  series_length = 100000,
-                 num_anomalies = 10,
+                 num_anomalies = None,  # None으로 변경하여 무작위 선택하도록
                  min_anomaly_distance = 2000,
                  window_length = 1050, 
                  window_stride = 5,
@@ -21,7 +21,8 @@ class Data:
         self.data_folder = data_folder
         self.error_window_length = error_window_length
         self.series_length = series_length
-        self.num_anomalies = num_anomalies
+        # 이상치 개수를 1~10개 사이에서 무작위로 선택
+        self.num_anomalies = num_anomalies if num_anomalies is not None else numpy.random.randint(1, 11)
         self.min_anomaly_distance = min_anomaly_distance
         self.window_length = window_length
         self.window_stride = window_stride
@@ -41,6 +42,9 @@ class Data:
         seed = ts_id # for the moment like this
 
         numpy.random.seed(seed)
+        # 실제 이상치 개수 출력 (사용자가 확인할 수 있도록)
+        print(f"🎯 실제 삽입된 이상치 개수: {self.num_anomalies}개")
+        
         anomaly_positions = numpy.random.randint((self.series_length-self.min_anomaly_distance*self.num_anomalies)/self.num_anomalies, size = self.num_anomalies)+self.min_anomaly_distance
         anomaly_positions = int(0.95*self.series_length) - numpy.cumsum(anomaly_positions)
         anomaly_positions.sort()
@@ -186,6 +190,7 @@ class Data:
         ret["series"] = series
         ret["scaled_series"] = signal
         ret["X_full"] = X_full # Whole matrix X with stride=1
+        ret["num_anomalies"] = self.num_anomalies  # 이상치 개수 정보 추가
         return ret
     
     
